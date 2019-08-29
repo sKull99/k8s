@@ -1,3 +1,7 @@
-# Kubernets cluster setup using Ansible and Vagrant
+# setup a multi nodes Kubernets cluster
 
-## this guide install Multi Node Kubernets clusters 
+### Prerequisites
+- virtualbox
+- ansible (it has been proved with ansible 2.6.0 version)
+- vagrant (it has been tested with vagrant 2.2.5 version)
+ 
