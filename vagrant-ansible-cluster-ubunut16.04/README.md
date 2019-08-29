@@ -23,9 +23,10 @@
  ```
 
 2. get into master node
+ . vagrant ssh k8s-master
 
  ```
- vagrant ssh k8s-master
+ 
  
  vagrant@k8s-master:~$ kubectl get nodes
 
