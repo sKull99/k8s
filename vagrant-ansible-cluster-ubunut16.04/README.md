@@ -13,7 +13,7 @@
   
 ### once "vagrant up# is completed   you will be able to  check the cluster's status with the setps below :
 
-1. ~/k8s/vagrant-ansible-cluster-ubunut16.04(master)$ vagrant ssh k8s-master vagrant status (in order to list  all the nodes up and running within virtualbox)
+1. ~/k8s/vagrant-ansible-cluster-ubunut16.04(master)$ **vagrant status** (in order to list  all the nodes up and running within virtualbox)
   ```
   Current machine states:
  
@@ -22,7 +22,7 @@
   node-2                    running (virtualbox)
  ```
 
-2. ~/k8s/vagrant-ansible-cluster-ubunut16.04(master)$ vagrant ssh k8s-master (get into the master node)
+2. ~/k8s/vagrant-ansible-cluster-ubunut16.04(master)$ **vagrant ssh k8s-master** (get into the master node)
   
  ``` 
  vagrant@k8s-master:~$ kubectl get nodes
