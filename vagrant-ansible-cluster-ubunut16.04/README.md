@@ -22,3 +22,16 @@
   node-2                    running (virtualbox)
  ```
 
+2. get into master node
+
+ ```
+ vagrant ssh k8s-master
+ 
+ vagrant@k8s-master:~$ kubectl get nodes
+
+NAME         STATUS     ROLES    AGE    VERSION
+k8s-master   Ready      master   100m   v1.15.3
+node-1       Ready      <none>   97m    v1.15.3
+node-2       NotReady   <none>   95m    v1.15.3
+
+ ```
