@@ -11,4 +11,14 @@
  3. vagrant up
   
   
-### once vagrant up is done you can check the 
+### once "vagrant up# is completed   you will be able to  check the cluster's status with the setps below :
+
+1. vagrant status (in order to list  all the nodes up and running within virtualbox)
+  ```
+  Current machine states:
+ 
+  k8s-master                running (virtualbox)
+  node-1                    running (virtualbox)
+  node-2                    running (virtualbox)
+ ```
+
