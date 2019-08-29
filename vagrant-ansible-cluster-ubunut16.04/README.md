@@ -6,9 +6,9 @@
 - vagrant (it has been tested with vagrant 2.2.5 version)
  
 ### run the next steps to build the cluster 
-  git clone git@github.com:abrahamcorales/k8s.git
-  cd k8s/vagrant-ansible-cluster-ubunut16.04/
-  vagrant up
+ 1. git clone git@github.com:abrahamcorales/k8s.git
+ 2. cd k8s/vagrant-ansible-cluster-ubunut16.04/
+ 3. vagrant up
   
   
 ### once vagrant up is done you can check the 
