@@ -2,6 +2,7 @@
 - hosts: all
   become: true
   tasks:
+  - debug: var=ansible_eth1.ipv4.address
   - name: Install packages that allow apt to be used over HTTPS
     apt:
       name: "{{ packages }}"
@@ -68,6 +69,21 @@
         - kubelet 
         - kubeadm 
         - kubectl
+  - name: Add IP node in /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+    lineinfile:
+      path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+      regexp: "EnvironmentFile=-/etc/default/kubelet"
+      line: 'Environment="KUBELET_EXTRA_ARGS=--node-ip={{ ansible_eth1.ipv4.address }}"'
+  - name: Reload services systemctl
+    command: systemctl daemon-reload
+  - name: Check is running kubelet
+    command: systemctl status kubelet
+    register: kubelet_is_up
+    ignore_errors: True
+  - name: Restarted kubelet
+    command: systemctl restart kubelet
+    when: kubelet_is_up is succeeded
+
   - name: Copy the join command to server location
     copy: src=/tmp/k8s-join-command.sh dest=/tmp/k8s-join-command.sh mode=0777
   - name: Join the node to cluster

@@ -2,6 +2,7 @@
 - hosts: all
   become: true
   tasks:
+  - debug: var=ansible_eth1.ipv4.address
   - name: Install packages that allow apt to be used over HTTPS
     apt:
       name: "{{ packages }}"
@@ -68,6 +69,20 @@
         - kubelet 
         - kubeadm 
         - kubectl
+  - name: Add IP node in /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+    lineinfile:
+      path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+      regexp: "EnvironmentFile=-/etc/default/kubelet"
+      line: 'Environment="KUBELET_EXTRA_ARGS=--node-ip={{ ansible_eth1.ipv4.address }}"'
+  - name: Reload services systemctl
+    command: systemctl daemon-reload
+  - name: Check is running kubelet
+    command: systemctl status kubelet
+    register: kubelet_is_up
+    ignore_errors: True
+  - name: Restarted kubelet
+    command: systemctl restart kubelet
+    when: kubelet_is_up is succeeded
   - name: Check if cluster is operational
     command: kubectl get nodes
     become: yes
@@ -79,7 +94,7 @@
     when: kube_is_up is failed
     ignore_errors: True
   - name: Initialize the Kubernetes cluster using kubeadm
-    command: kubeadm init --apiserver-advertise-address="192.168.50.10" --apiserver-cert-extra-sans="192.168.50.10"  --node-name k8s-master --pod-network-cidr="192.168.0.0/16"
+    command: kubeadm init --apiserver-advertise-address="192.168.50.10" --apiserver-cert-extra-sans="192.168.50.10"  --node-name k8s-master --pod-network-cidr="192.168.0.0/16" --service-cidr="192.168.0.0/12"
     when: kube_is_up is failed
   - name: Setup kubeconfig for vagrant user
     command: "{{ item }}"
@@ -88,12 +103,10 @@
      - cp -a /etc/kubernetes/admin.conf /root/.kube/config
      - cp -a /etc/kubernetes/admin.conf /home/vagrant/.kube/config
      - chown vagrant:vagrant /home/vagrant/.kube/config
-  - name: Install calico pod network
-    command: kubectl create -f https://docs.projectcalico.org/v3.4/getting-started/kubernetes/installation/hosted/calico.yaml
-    when: kube_is_up is failed
-  - name: Re-Install calico pod network, if needed | by hflores
-    command: kubectl apply -f https://docs.projectcalico.org/v3.4/getting-started/kubernetes/installation/hosted/calico.yaml
-    when: kube_is_up is succeeded
+  - name: Execution rbac-kdd.yaml | Networking v3.3
+    command: kubectl apply -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/rbac-kdd.yaml
+  - name: Execution 1.7/calico.yaml | Networking v3.3
+    command: kubectl apply -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/kubernetes-datastore/calico-networking/1.7/calico.yaml
   - name: Generate join command
     command: kubeadm token create --print-join-command
     register: join_command
